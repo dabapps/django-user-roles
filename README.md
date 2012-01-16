@@ -24,7 +24,7 @@ USER_ROLES = (
 )
 
 It can sometime be useful to override the default user role class, in order
-to provide .
+to provide simple tests against a user's role.
 
 You can do this by setting `USER_ROLE_CLASS` in your settings file.
 

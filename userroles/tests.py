@@ -18,16 +18,6 @@ from milkman.dairy import milkman
 from userroles.decorators import role_required
 from userroles.models import UserRole
 
-urlpatterns = patterns('userroles.tests',
-    (r'^manager_or_moderator$', 'manager_or_moderator'),
-)
-
-
-@role_required('manager', 'moderator')
-def manager_or_moderator(request):
-    return HttpResponse('ok')
-
-
 #class ManagerRole(models.Model):
 #    star_rating = models.IntegerField(default=3)
 
@@ -35,6 +25,8 @@ def manager_or_moderator(request):
 #class ClientRole(models.Model):
 #    foobar = models.CharField(max_length=32)
 
+
+# Basic user role tests
 
 class RoleTests(TestCase):
     """
@@ -73,6 +65,18 @@ class RoleTests(TestCase):
         """
         self.user.role = 'manager'
         self.assertIn(self.reload_user().role, ('manager',))
+
+
+# Tests for user role view decorators
+
+urlpatterns = patterns('userroles.tests',
+    (r'^manager_or_moderator$', 'manager_or_moderator'),
+)
+
+
+@role_required('manager', 'moderator')
+def manager_or_moderator(request):
+    return HttpResponse('ok')
 
 
 class ViewTests(TestCase):
