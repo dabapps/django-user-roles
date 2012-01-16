@@ -12,14 +12,14 @@ def _string_to_class(class_as_string):
     return getattr(importlib.import_module(module_str), class_str)
 
 
-def get_user_role_default():
+def _get_user_role_default():
     user_roles = getattr(settings, 'USER_ROLES', None)
     if not user_roles:
         return ''
     return user_roles[0][0]
 
 
-def get_user_role_choices():
+def _get_user_role_choices():
     user_roles = getattr(settings, 'USER_ROLES', None)
     if not user_roles:
         return [('', '')]
@@ -28,8 +28,8 @@ def get_user_role_choices():
 
 class UserRole(models.Model):
     user = models.OneToOneField(User)
-    name = models.CharField(max_length=64, default=get_user_role_default,
-                            choices=get_user_role_choices())
+    name = models.CharField(max_length=64, default=_get_user_role_default,
+                            choices=_get_user_role_choices())
 
     def __unicode__(self):
         return self.name
@@ -38,19 +38,19 @@ class UserRole(models.Model):
         return unicode(self) == unicode(other)
 
 
-def get_role(user):
+def _get_role(user):
     setting = getattr(settings, 'USER_ROLE_CLASS', None)
     user_role_class = setting and _string_to_class(setting) or UserRole
     return user_role_class.objects.get_or_create(user=user)[0]
 
 
-def set_role(user, role_name):
+def _set_role(user, role_name):
     role = user.role
     role.name = role_name
     role.full_clean()
     role.save()
 
-User.role = property(get_role, set_role)
+User.role = property(_get_role, _set_role)
 
 
 # class UserRoleProfile(models.Model):
