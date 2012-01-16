@@ -1,7 +1,7 @@
 from django.contrib.auth.decorators import user_passes_test
 
 
-def user_has_role(*roles):
+def role_required(*roles):
     """
     Decorator for views that checks whether a user has a particular role,
     redirecting to the log-in page if neccesary.

@@ -14,14 +14,14 @@ from django.test import TestCase
 
 from milkman.dairy import milkman
 
-from userroles.decorators import user_has_role
+from userroles.decorators import role_required
 
 urlpatterns = patterns('userroles.tests',
     (r'^manager_or_moderator$', 'manager_or_moderator'),
 )
 
 
-@user_has_role('manager', 'moderator')
+@role_required('manager', 'moderator')
 def manager_or_moderator(request):
     return HttpResponse('ok')
 

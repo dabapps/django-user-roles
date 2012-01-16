@@ -14,14 +14,31 @@ A User role:
 2.  
 
 
-settings
+Settings
 --------
 
 USER_ROLES = (
-    ('name', 'myproject.ManagerUserRole'),
+    ('manager', 'myproject.ManagerUserProfile'),
+    ('moderator', 'myproject.ModeratorUserProfile'),
+    ('client', 'myproject.ClientUserProfile'),
 )
 
-testing
+Usage
+-----
+
+Setting and checking the user role:
+
+    user.role = 'manager'
+    user.role == 'manager'
+    user.role in ('manager', 'moderator')
+
+View decorator similar to `login_required`, `permission_required`:
+
+    @role_required('manager', 'moderator')
+    def view(request):
+        ...
+
+Testing
 -------
 
 ./manage.py test userroles

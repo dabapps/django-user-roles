@@ -22,7 +22,7 @@ def get_user_role_choices():
 
 
 class UserRole(models.Model):
-    user = models.OneToOneField(User, related_name='role')
+    user = models.OneToOneField(User)
     name = models.CharField(max_length=64, default=get_user_role_default,
                             choices=get_user_role_choices())
 
