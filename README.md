@@ -23,6 +23,22 @@ USER_ROLES = (
     ('client', 'myproject.ClientUserProfile'),
 )
 
+It can sometime be useful to override the default user role class, in order
+to provide .
+
+You can do this by setting `USER_ROLE_CLASS` in your settings file.
+
+`settings.py`:
+
+    USER_ROLE_CLASS = 'myapp.models.CustomUserRole'
+
+`models.py`:
+
+    def CustomUserRole(userroles.UserRole):
+        @property
+        def can_moderate_discussions(self):
+            return self in ('manager', 'moderator')
+
 Usage
 -----
 
