@@ -26,12 +26,12 @@ def manager_or_moderator(request):
     return HttpResponse('ok')
 
 
-class ManagerRole(models.Model):
-    star_rating = models.IntegerField(default=3)
+#class ManagerRole(models.Model):
+#    star_rating = models.IntegerField(default=3)
 
 
-class ClientRole(models.Model):
-    foobar = models.CharField(max_length=32)
+#class ClientRole(models.Model):
+#    foobar = models.CharField(max_length=32)
 
 
 class RoleTests(TestCase):
