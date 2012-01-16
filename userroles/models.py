@@ -4,7 +4,12 @@ from django.contrib.auth.models import User
 from django.conf import settings
 from django.db import models
 
-# import importlib
+import importlib
+
+
+def _string_to_class(class_as_string):
+    module_str, class_str = class_as_string.rsplit('.', 1)
+    return getattr(importlib.import_module(module_str), class_str)
 
 
 def get_user_role_default():
@@ -34,7 +39,9 @@ class UserRole(models.Model):
 
 
 def get_role(user):
-    return UserRole.objects.get_or_create(user=user)[0]
+    setting = getattr(settings, 'USER_ROLE_CLASS', None)
+    user_role_class = setting and _string_to_class(setting) or UserRole
+    return user_role_class.objects.get_or_create(user=user)[0]
 
 
 def set_role(user, role_name):

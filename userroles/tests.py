@@ -105,12 +105,20 @@ class CustomUserRole(UserRole):
 
 class UserRoleClassSettingTests(TestCase):
     def setUp(self):
+        # Note: If we move to Django 1.4, we can use proper test settings here.
+        self.orig_role_class = getattr(settings, 'USER_ROLE_CLASS', None)
+        settings.USER_ROLE_CLASS = 'userroles.tests.CustomUserRole'
         self.user = milkman.deliver(User)
         self.user.role = 'moderator'
-        settings.USER_ROLE_CLASS = 'testproject.tests.CustomUserRole'
+
+    def tearDown(self):
+        if not self.orig_role_class:
+            del settings.USER_ROLE_CLASS
+        else:
+            settings.USER_ROLE_CLASS = self.orig_role_class
 
     def test_role_has_custom_property(self):
-        self.assertTrue(self.user.can_moderate_discussions)
+        self.assertTrue(self.user.role.can_moderate_discussions)
 
 
 #    def setUp(self):
