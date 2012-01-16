@@ -6,6 +6,7 @@ Replace this with more appropriate tests for your application.
 """
 
 from django.core.exceptions import ValidationError
+from django.conf import settings
 from django.conf.urls import patterns
 from django.contrib.auth.models import User
 from django.db import models
@@ -15,6 +16,7 @@ from django.test import TestCase
 from milkman.dairy import milkman
 
 from userroles.decorators import role_required
+from userroles.models import UserRole
 
 urlpatterns = patterns('userroles.tests',
     (r'^manager_or_moderator$', 'manager_or_moderator'),
@@ -91,6 +93,30 @@ class ViewTests(TestCase):
         self.user.role = 'client'
         resp = self.client.get('/manager_or_moderator')
         self.assertEquals(resp.status_code, 302)
+
+
+# Tests for using a custom UserRole class
+
+class CustomUserRole(UserRole):
+    @property
+    def can_moderate_discussions(self):
+        return self in ('moderator', 'manager')
+
+
+class UserRoleClassSettingTests(TestCase):
+    def setUp(self):
+        self.user = milkman.deliver(User)
+        self.user.role = 'moderator'
+        settings.USER_ROLE_CLASS = 'testproject.tests.CustomUserRole'
+
+    def test_role_has_custom_property(self):
+        self.assertTrue(self.user.can_moderate_discussions)
+
+
+#    def setUp(self):
+#        self.orig_settings = settings
+
+#    def tearDown(self):
 
 
 # class SimpleTest(TestCase):
