@@ -155,7 +155,7 @@ LOGGING = {
 }
 
 USER_ROLES = (
-    ('manager', ''),
+    ('manager', 'userroles.tests.ManagerRole'),
     ('moderator', ''),
     ('client', ''),
 )

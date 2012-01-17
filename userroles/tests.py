@@ -1,8 +1,4 @@
 """
-This file demonstrates writing tests using the unittest module. These will pass
-when you run "manage.py test".
-
-Replace this with more appropriate tests for your application.
 """
 
 from django.core.exceptions import ValidationError
@@ -16,55 +12,55 @@ from django.test import TestCase
 from milkman.dairy import milkman
 
 from userroles.decorators import role_required
-from userroles.models import UserRole
-
-#class ManagerRole(models.Model):
-#    star_rating = models.IntegerField(default=3)
+from userroles.models import UserRole, set_user_role
+from userroles import roles
 
 
-#class ClientRole(models.Model):
-#    foobar = models.CharField(max_length=32)
+class RoleObjectTests(TestCase):
+    def test_existing_role_propery(self):
+        self.assertTrue(roles.manager)
+
+    def test_non_existing_role_propery(self):
+        self.assertRaises(AttributeError, getattr, roles, 'foobar')
 
 
 # Basic user role tests
 
+class Dummy(object):
+    pass
+
+
+class ManagerRole(models.Model):
+    star_rating = models.IntegerField(default=3)
+
+
 class RoleTests(TestCase):
     """
-    Test basic role operations - getting, setting and comparisons.
+    Test basic role operations.
     """
 
     def setUp(self):
-        self.user = milkman.deliver(User)
+        user = milkman.deliver(User)
+        set_user_role(user, roles.manager)
+        self.user = User.objects.get(id=user.id)
 
-    def reload_user(self):
-        return User.objects.get(id=self.user.id)
+    def test_role_comparison(self):
+        """
+        Ensure that we can test if a user role has a given value.
+        """
+        self.assertEquals(self.user.role, roles.manager)
 
-    def test_set_valid_user_role(self):
-        """
-        Ensure that we can set user roles to a valid value.
-        """
-        self.user.role = 'manager'
-        self.assertEquals(self.reload_user().role, 'manager')
-
-    def test_set_invalid_user_role(self):
-        """
-        Ensure that we cannot set user roles to an invalid value.
-        """
-        args = (self.user, 'role', 'foobar')
-        self.assertRaises(ValidationError, setattr, *args)
-
-    def test_default_user_role(self):
-        """
-        Ensure that user roles have a valid value when unset.
-        """
-        self.assertEquals(self.reload_user().role, 'manager')
-
-    def test_role_exists_in_set(self):
+    def test_role_in_set(self):
         """
         Ensure that we can test if a user role exists in a given set.
         """
-        self.user.role = 'manager'
-        self.assertIn(self.reload_user().role, ('manager',))
+        self.assertIn(self.user.role, (roles.manager,))
+
+    def test_invalid_role(self):
+        """
+        Ensure that trying to get an invalid role raises an attribute error.
+        """
+        self.assertRaises(AttributeError, getattr, roles, 'foobar')
 
 
 # Tests for user role view decorators
@@ -74,7 +70,7 @@ urlpatterns = patterns('userroles.tests',
 )
 
 
-@role_required('manager', 'moderator')
+@role_required(roles.manager, roles.moderator)
 def manager_or_moderator(request):
     return HttpResponse('ok')
 
@@ -89,12 +85,12 @@ class ViewTests(TestCase):
         self.client.login(username=self.user.username, password='password')
 
     def test_get_allowed_view(self):
-        self.user.role = 'moderator'
+        set_user_role(self.user, roles.manager)
         resp = self.client.get('/manager_or_moderator')
         self.assertEquals(resp.status_code, 200)
 
     def test_get_disallowed_view(self):
-        self.user.role = 'client'
+        set_user_role(self.user, roles.client)
         resp = self.client.get('/manager_or_moderator')
         self.assertEquals(resp.status_code, 302)
 
@@ -113,7 +109,7 @@ class UserRoleClassSettingTests(TestCase):
         self.orig_role_class = getattr(settings, 'USER_ROLE_CLASS', None)
         settings.USER_ROLE_CLASS = 'userroles.tests.CustomUserRole'
         self.user = milkman.deliver(User)
-        self.user.role = 'moderator'
+        set_user_role(self.user, roles.moderator)
 
     def tearDown(self):
         if not self.orig_role_class:
@@ -123,21 +119,3 @@ class UserRoleClassSettingTests(TestCase):
 
     def test_role_has_custom_property(self):
         self.assertTrue(self.user.role.can_moderate_discussions)
-
-
-#    def setUp(self):
-#        self.orig_settings = settings
-
-#    def tearDown(self):
-
-
-# class SimpleTest(TestCase):
-#     @override_settings(USER_ROLES=(('manager', ''),))
-#     def test_creating_user_creates_role(self):
-#         user = milkman.deliver(User)
-#         self.assertEquals(user.role, 'manager')
-
-#     @override_settings(USER_ROLES=(('manager', 'userroles.tests.ManagerRole'),))
-#     def test_get_custom_role_information(self):
-#         user = milkman.deliver(User)
-#         self.assertEquals(user.role.star_rating, 3)
