@@ -40,6 +40,7 @@ Basic Usage
 Setting the user role:
 
 	from userroles.models import set_user_role
+    from userroles import roles
 
     set_user_role(self.user, roles.manager)
 
