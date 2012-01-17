@@ -93,4 +93,4 @@ You can do this by setting `USER_ROLE_CLASS` in your settings file.
 Testing
 -------
 
-./manage.py test userroles
+    ./manage.py test userroles
