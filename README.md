@@ -1,11 +1,13 @@
 Django User Roles
 =================
 
-Simple role-based user permissions and profiles for Django.
+Simple role-based user permissions for Django.
 
 django-user-roles is a simple, reusable app that allows you to create a set of user roles, which can be used to control which views each type of user has permission to view, and to customize how the site is presented to different types of user.
 
+<!--
 User roles can also be associated with differing profile classes, allowing you to store different types of user information for different user types.
+-->
 
 Settings
 --------
@@ -77,7 +79,7 @@ You can do this by setting `USER_ROLE_CLASS` in your settings file.
     def CustomUserRole(userroles.UserRole):
         @property
         def can_moderate_discussions(self):
-            return self in (roles.manager, roles.moderator)
+        	return self.is_moderator or self.is_manager
 
 `views.py`:
 

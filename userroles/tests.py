@@ -108,7 +108,7 @@ class ViewTests(TestCase):
 class CustomUserRole(UserRole):
     @property
     def can_moderate_discussions(self):
-        return self in (roles.moderator, roles.manager)
+        return self.is_moderator or self.is_manager
 
 
 class UserRoleClassSettingTests(TestCase):
