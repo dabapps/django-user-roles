@@ -159,3 +159,5 @@ USER_ROLES = (
     ('moderator', ''),
     ('client', ''),
 )
+
+USER_ROLE_CLASS = 'userroles.tests.CustomUserRole'

@@ -1,11 +1,9 @@
 """
 """
 
-from django.core.exceptions import ValidationError
 from django.conf import settings
 from django.conf.urls import patterns
 from django.contrib.auth.models import User
-from django.db import models
 from django.http import HttpResponse
 from django.test import TestCase
 
@@ -16,22 +14,20 @@ from userroles.models import UserRole, set_user_role
 from userroles import roles
 
 
+# Basic user role tests
+
 class RoleObjectTests(TestCase):
     def test_existing_role_propery(self):
+        """
+        Ensure that we can get a valid role.
+        """
         self.assertTrue(roles.manager)
 
     def test_non_existing_role_propery(self):
+        """
+        Ensure that trying to get an invalid role raises an attribute error.
+        """
         self.assertRaises(AttributeError, getattr, roles, 'foobar')
-
-
-# Basic user role tests
-
-class Dummy(object):
-    pass
-
-
-class ManagerRole(models.Model):
-    star_rating = models.IntegerField(default=3)
 
 
 class RoleTests(TestCase):
@@ -56,11 +52,23 @@ class RoleTests(TestCase):
         """
         self.assertIn(self.user.role, (roles.manager,))
 
-    def test_invalid_role(self):
+    def test_is_role(self):
         """
-        Ensure that trying to get an invalid role raises an attribute error.
+        Test `user.role.is_something` style.
         """
-        self.assertRaises(AttributeError, getattr, roles, 'foobar')
+        self.assertTrue(self.user.role.is_manager)
+
+    def test_is_not_role(self):
+        """
+        Test `user.role.is_not_something` style.
+        """
+        self.assertFalse(self.user.role.is_moderator)
+
+    def test_is_invalid_role(self):
+        """
+        Test `user.role.is_invalid` raises an AttributeError.
+        """
+        self.assertRaises(AttributeError, getattr, self.user.role, 'is_foobar')
 
 
 # Tests for user role view decorators
@@ -100,7 +108,7 @@ class ViewTests(TestCase):
 class CustomUserRole(UserRole):
     @property
     def can_moderate_discussions(self):
-        return self in ('moderator', 'manager')
+        return self in (roles.moderator, roles.manager)
 
 
 class UserRoleClassSettingTests(TestCase):
