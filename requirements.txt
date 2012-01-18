@@ -1,2 +1,2 @@
-http://www.djangoproject.com/download/1.4-alpha-1/tarball/
+Django
 milkman

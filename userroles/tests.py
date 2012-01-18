@@ -2,7 +2,7 @@
 """
 
 from django.conf import settings
-from django.conf.urls import patterns
+from django.conf.urls.defaults import patterns
 from django.contrib.auth.models import User
 from django.http import HttpResponse
 from django.test import TestCase
