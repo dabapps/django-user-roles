@@ -1,7 +1,6 @@
 from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
 import importlib
-from collections import namedtuple
 
 
 _CONFIGURATION_ERROR = "USER_ROLES should be a list of strings and/or two-tuples"
@@ -18,7 +17,15 @@ def _import_class_from_string(class_path):
     return getattr(importlib.import_module(module_path), class_name)
 
 
-Role = namedtuple('Role', ['name'])
+class Role(object):
+    """
+    A single role, eg as returned by `roles.moderator`.
+    """
+    def __init__(self, name):
+        self.name = name
+
+    def __unicode__(self):
+        return self.name
 
 
 class Roles(object):
