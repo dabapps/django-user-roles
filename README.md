@@ -54,6 +54,7 @@ Checking the user role:
 
     user.role == roles.manager
     user.role in (roles.manager, roles.moderator)
+    user.role.is_moderator
 
 
 The `role_required` decorator provides similar behavior to Django's `login_required` and `permission_required` decorators.  If the user accessing the view does not have the required roles, they will be redirected to the login page:
