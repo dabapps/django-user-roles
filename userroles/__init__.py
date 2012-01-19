@@ -34,11 +34,11 @@ class Roles(object):
     @property
     def roles_dict(self):
         """
-        Load USER_ROLES setting into {name: ...}
+        Load list style config into dict of {role_name: role_class}
         """
         if self._roles_dict is None:
             self._roles_dict = {}
-            for item in getattr(settings, 'USER_ROLES', ()):
+            for item in self._config:
                 if isinstance(item, basestring):
                     # An item like 'manager'
                     self._roles_dict[item] = None
@@ -59,8 +59,20 @@ class Roles(object):
         """
         return [(role, role) for role in self.roles_dict.keys()]
 
+    def __init__(self, config=None):
+        """
+        By default the Roles object will be created using configuration from
+        the django settings file, but you can also set the configuration
+        explicitly, for example, when testing.
+        """
+        self._config = config or getattr(settings, 'USER_ROLES', ())
+
     def __getattr__(self, name):
-        if name in self._roles_dict.keys():
+        """
+        Handle custom properties for returning Role objects.
+        For example: `roles.moderator`
+        """
+        if name in self.roles_dict.keys():
             return Role(name=name)
         else:
             raise AttributeError("No such role exists '%s'" % name)

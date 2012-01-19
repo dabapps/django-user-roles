@@ -124,10 +124,4 @@ INSTALLED_APPS = (
     'userroles',
 )
 
-USER_ROLES = (
-    ('manager', 'userroles.tests.ManagerRole'),
-    ('moderator', ''),
-    ('client', ''),
-)
-
 USER_ROLE_CLASS = 'userroles.tests.CustomUserRole'

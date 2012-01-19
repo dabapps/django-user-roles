@@ -1,22 +1,49 @@
 """
 """
 
-from django.conf import settings
-from django.conf.urls.defaults import patterns
 from django.contrib.auth.models import User
-from django.http import HttpResponse
-from django.test import TestCase
 
 from milkman.dairy import milkman
 
-from userroles.decorators import role_required
-from userroles.models import UserRole, set_user_role
-from userroles import roles
+from userroles.models import set_user_role
+from userroles.utils import SettingsTestCase
+from userroles import Roles
+
+from django.conf import settings
+
+# Test setup
+
+roles_config = (
+    ('manager', 'userroles.tests.ManagerRole'),
+    ('moderator', ''),
+    ('client', ''),
+)
+
+installed_apps_config = list(settings.INSTALLED_APPS)
+installed_apps_config.remove('userroles')
+installed_apps_config.append('userroles.testapp')
+
+roles = Roles(roles_config)
+
+
+class TestCase(SettingsTestCase):
+    def setUp(self):
+        super(TestCase, self).setUp()
+        self.settings(
+            INSTALLED_APPS=installed_apps_config,
+            USER_ROLE_CLASS='userroles.testapp.models.CustomUserRole',
+            ROOT_URLCONF='userroles.testapp.urls',
+            USER_ROLES=roles_config
+        )
 
 
 # Basic user role tests
 
-class RoleObjectTests(TestCase):
+class RoleTests(TestCase):
+    """
+    Test operations on role object.
+    """
+
     def test_existing_role_propery(self):
         """
         Ensure that we can get a valid role.
@@ -30,12 +57,13 @@ class RoleObjectTests(TestCase):
         self.assertRaises(AttributeError, getattr, roles, 'foobar')
 
 
-class RoleTests(TestCase):
+class UserRoleTests(TestCase):
     """
-    Test basic role operations.
+    Test basic user.role operations.
     """
 
     def setUp(self):
+        super(UserRoleTests, self).setUp()
         user = milkman.deliver(User)
         set_user_role(user, roles.manager)
         self.user = User.objects.get(id=user.id)
@@ -73,20 +101,9 @@ class RoleTests(TestCase):
 
 # Tests for user role view decorators
 
-urlpatterns = patterns('userroles.tests',
-    (r'^manager_or_moderator$', 'manager_or_moderator'),
-)
-
-
-@role_required(roles.manager, roles.moderator)
-def manager_or_moderator(request):
-    return HttpResponse('ok')
-
-
 class ViewTests(TestCase):
-    urls = 'userroles.tests'
-
     def setUp(self):
+        super(ViewTests, self).setUp()
         self.user = milkman.deliver(User)
         self.user.set_password('password')
         self.user.save()
@@ -105,25 +122,11 @@ class ViewTests(TestCase):
 
 # Tests for using a custom UserRole class
 
-class CustomUserRole(UserRole):
-    @property
-    def can_moderate_discussions(self):
-        return self.is_moderator or self.is_manager
-
-
 class UserRoleClassSettingTests(TestCase):
     def setUp(self):
-        # Note: If we move to Django 1.4, we can use proper test settings here.
-        self.orig_role_class = getattr(settings, 'USER_ROLE_CLASS', None)
-        settings.USER_ROLE_CLASS = 'userroles.tests.CustomUserRole'
+        super(UserRoleClassSettingTests, self).setUp()
         self.user = milkman.deliver(User)
         set_user_role(self.user, roles.moderator)
-
-    def tearDown(self):
-        if not self.orig_role_class:
-            del settings.USER_ROLE_CLASS
-        else:
-            settings.USER_ROLE_CLASS = self.orig_role_class
 
     def test_role_has_custom_property(self):
         self.assertTrue(self.user.role.can_moderate_discussions)
