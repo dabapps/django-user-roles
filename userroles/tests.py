@@ -1,21 +1,19 @@
 """
 """
 
+from django.conf import settings
 from django.contrib.auth.models import User
-
 from milkman.dairy import milkman
-
 from userroles.models import set_user_role, UserRole
+from userroles.testapp.models import ModeratorProfile
 from userroles.utils import SettingsTestCase
 from userroles import Roles
-
-from django.conf import settings
 
 # Test setup
 
 roles_config = (
     ('manager', ''),
-    ('moderator', 'userroles.tests.ModeratorRole'),
+    ('moderator', 'userroles.testapp.models.ModeratorProfile'),
     ('client', ''),
 )
 
@@ -34,6 +32,10 @@ class TestCase(SettingsTestCase):
             ROOT_URLCONF='userroles.testapp.urls',
             USER_ROLES=roles_config
         )
+
+
+class DummyClass(object):
+    pass
 
 
 # Basic user role tests
@@ -63,9 +65,8 @@ class UserRoleTests(TestCase):
 
     def setUp(self):
         super(UserRoleTests, self).setUp()
-        user = milkman.deliver(User)
-        set_user_role(user, roles.manager)
-        self.user = User.objects.get(id=user.id)
+        self.user = milkman.deliver(User)
+        set_user_role(self.user, roles.manager)
 
     def test_role_comparison(self):
         """
@@ -99,15 +100,39 @@ class UserRoleTests(TestCase):
 
     def test_set_role_without_profile(self):
         """
+        Set a role that does not take a profile.
         """
         set_user_role(self.user, roles.client)
         self.assertTrue(self.user.role.is_client)
 
     def test_set_role_with_profile(self):
         """
+        Set a role that takes a profile.
         """
-        set_user_role(self.user, roles.moderator)
+        set_user_role(self.user, roles.moderator, ModeratorProfile(stars=5))
         self.assertTrue(self.user.role.is_moderator)
+        self.assertEquals(self.user.role.profile.stars, 5)
+
+    def test_set_role_without_profile_incorrectly(self):
+        """
+        Attempt to set a profile on a role that does not take a profile.
+        """
+        args = (self.user, roles.client, ModeratorProfile())
+        self.assertRaises(ValueError, set_user_role, *args)
+
+    def test_set_role_with_profile_incorrectly(self):
+        """
+        Attempt to set a role that uses profiles, without setting a profile.
+        """
+        args = (self.user, roles.moderator, )
+        self.assertRaises(ValueError, set_user_role, *args)
+
+    def test_set_role_with_profile_using_wrong_profile(self):
+        """
+        Attempt to set a role that uses profiles, without setting a profile.
+        """
+        args = (self.user, roles.moderator, DummyClass())
+        self.assertRaises(ValueError, set_user_role, *args)
 
 
 # Tests for user role view decorators

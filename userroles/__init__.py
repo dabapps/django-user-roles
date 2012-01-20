@@ -3,7 +3,8 @@ from django.core.exceptions import ImproperlyConfigured
 import importlib
 
 
-_CONFIGURATION_ERROR = "USER_ROLES should be a list of strings and/or two-tuples"
+_IMPORT_FAILED = "Could not import role profile '%s'"
+_INCORRECT_ARGS = "USER_ROLES should be a list of strings and/or two-tuples"
 
 
 def _import_class_from_string(class_path):
@@ -44,11 +45,16 @@ class Roles(object):
                     self._roles_dict[item] = None
                 elif len(item) == 2:
                     # An item like ('manager', 'myapp.models.ManagerProfile')
+                    #           or ('manager', '')
                     name, profile = item
-                    self._roles_dict[name] = profile
+                    try:
+                        profile_class = _import_class_from_string(profile)
+                    except:
+                        raise ImproperlyConfigured(_IMPORT_FAILED, profile)
+                    self._roles_dict[name] = profile_class
                 else:
                     # Anything else
-                    raise ImproperlyConfigured(_CONFIGURATION_ERROR)
+                    raise ImproperlyConfigured(_INCORRECT_ARGS)
         return self._roles_dict
 
     @property

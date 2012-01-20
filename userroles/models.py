@@ -21,6 +21,7 @@ class UserRole(models.Model):
             role = getattr(self.valid_roles, name[3:], None)
             if role:
                 return self == role
+
         raise AttributeError("'%s' object has no attribute '%s'" %
                              (self.__class__.__name__, name))
 
@@ -28,11 +29,24 @@ class UserRole(models.Model):
         return self.name
 
 
-def set_user_role(user, role):
+def set_user_role(user, role, profile=None):
+    profile_class = UserRole.valid_roles.roles_dict[role.name]
+
+    if profile_class and not profile:
+        raise ValueError("You must set a profile for '%s' role" % role.name)
+    elif profile and not profile_class:
+        raise ValueError("Cannot set a profile for '%s' role" % role.name)
+    elif profile and not isinstance(profile, profile_class):
+        raise ValueError("Incorrect profile for '%s' role" % role.name)
+
+    if profile:
+        profile.save()
+
     try:
         role_obj = UserRole.objects.get(user=user)
     except UserRole.DoesNotExist:
         role_obj = UserRole(user=user, name=role.name)
     else:
         role_obj.name = role.name
+    role_obj.profile = profile
     role_obj.save()
