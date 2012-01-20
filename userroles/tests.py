@@ -21,7 +21,6 @@ installed_apps_config = list(settings.INSTALLED_APPS)
 installed_apps_config.append('userroles.testapp')
 
 roles = Roles(roles_config)
-UserRole.valid_roles = roles
 
 
 class TestCase(SettingsTestCase):
@@ -32,6 +31,11 @@ class TestCase(SettingsTestCase):
             ROOT_URLCONF='userroles.testapp.urls',
             USER_ROLES=roles_config
         )
+        self.restore_roles = UserRole.valid_roles
+        UserRole.valid_roles = roles
+
+    def tearDown(self):
+        UserRole.valid_roles = self.restore_roles
 
 
 class DummyClass(object):
