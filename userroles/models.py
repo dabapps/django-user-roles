@@ -24,7 +24,15 @@ class UserRole(models.Model):
         raise AttributeError("'%s' object has no attribute '%s'" %
                              (self.__class__.__name__, name))
 
+    def __unicode__(self):
+        return self.name
+
 
 def set_user_role(user, role):
-    role = UserRole(user=user, name=role.name)
-    role.save()
+    try:
+        role_obj = UserRole.objects.get(user=user)
+    except UserRole.DoesNotExist:
+        role_obj = UserRole(user=user, name=role.name)
+    else:
+        role_obj.name = role.name
+    role_obj.save()

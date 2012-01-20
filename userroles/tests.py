@@ -14,8 +14,8 @@ from django.conf import settings
 # Test setup
 
 roles_config = (
-    ('manager', 'userroles.tests.ManagerRole'),
-    ('moderator', ''),
+    ('manager', ''),
+    ('moderator', 'userroles.tests.ModeratorRole'),
     ('client', ''),
 )
 
@@ -96,6 +96,18 @@ class UserRoleTests(TestCase):
         Test `user.role.is_invalid` raises an AttributeError.
         """
         self.assertRaises(AttributeError, getattr, self.user.role, 'is_foobar')
+
+    def test_set_role_without_profile(self):
+        """
+        """
+        set_user_role(self.user, roles.client)
+        self.assertTrue(self.user.role.is_client)
+
+    def test_set_role_with_profile(self):
+        """
+        """
+        set_user_role(self.user, roles.moderator)
+        self.assertTrue(self.user.role.is_moderator)
 
 
 # Tests for user role view decorators
