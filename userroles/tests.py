@@ -5,7 +5,7 @@ from django.contrib.auth.models import User
 
 from milkman.dairy import milkman
 
-from userroles.models import set_user_role
+from userroles.models import set_user_role, UserRole
 from userroles.utils import SettingsTestCase
 from userroles import Roles
 
@@ -20,10 +20,10 @@ roles_config = (
 )
 
 installed_apps_config = list(settings.INSTALLED_APPS)
-installed_apps_config.remove('userroles')
 installed_apps_config.append('userroles.testapp')
 
 roles = Roles(roles_config)
+UserRole.valid_roles = roles
 
 
 class TestCase(SettingsTestCase):
@@ -31,7 +31,6 @@ class TestCase(SettingsTestCase):
         super(TestCase, self).setUp()
         self.settings(
             INSTALLED_APPS=installed_apps_config,
-            USER_ROLE_CLASS='userroles.testapp.models.CustomUserRole',
             ROOT_URLCONF='userroles.testapp.urls',
             USER_ROLES=roles_config
         )
@@ -122,11 +121,11 @@ class ViewTests(TestCase):
 
 # Tests for using a custom UserRole class
 
-class UserRoleClassSettingTests(TestCase):
-    def setUp(self):
-        super(UserRoleClassSettingTests, self).setUp()
-        self.user = milkman.deliver(User)
-        set_user_role(self.user, roles.moderator)
+# class UserRoleClassSettingTests(TestCase):
+#     def setUp(self):
+#         super(UserRoleClassSettingTests, self).setUp()
+#         self.user = milkman.deliver(User)
+#         set_user_role(self.user, roles.moderator)
 
-    def test_role_has_custom_property(self):
-        self.assertTrue(self.user.role.can_moderate_discussions)
+#     def test_role_has_custom_property(self):
+#         self.assertTrue(self.user.role.can_moderate_discussions)

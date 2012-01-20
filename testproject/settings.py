@@ -123,5 +123,3 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
     'userroles',
 )
-
-USER_ROLE_CLASS = 'userroles.tests.CustomUserRole'

@@ -66,31 +66,6 @@ The `role_required` decorator provides similar behavior to Django's `login_requi
     def view(request):
         ...
 
-Using Custom Role Classes
--------------------------
-
-It can sometime be useful to override the default user role class.
-You can do this by setting `USER_ROLE_CLASS` in your settings file.
-
-`settings.py`:
-
-    USER_ROLE_CLASS = 'myapp.models.CustomUserRole'
-
-`models.py`:
-
-    def CustomUserRole(userroles.UserRole):
-        @property
-        def can_moderate_discussions(self):
-        	return self.is_moderator or self.is_manager
-
-`views.py`:
-
-	def view(request):
-        if user.role.can_moderate_discussions:
-            ...
-		else:
-			...
-
 Testing
 -------
 

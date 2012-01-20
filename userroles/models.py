@@ -1,9 +1,8 @@
-from django.conf import settings
 from django.contrib.auth.models import User
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes import generic
 from django.db import models
-from userroles import roles, _import_class_from_string
+from userroles import roles
 
 
 class UserRole(models.Model):
@@ -13,9 +12,6 @@ class UserRole(models.Model):
     object_id = models.PositiveIntegerField(null=True, blank=True)
     profile = generic.GenericForeignKey('content_type', 'object_id')
     valid_roles = roles
-
-    class Meta:
-        abstract = bool(getattr(settings, 'USER_ROLE_CLASS', None))
 
     def __eq__(self, other):
         return self.name == other.name
@@ -30,7 +26,7 @@ class UserRole(models.Model):
 
 
 def set_user_role(user, role):
-    user_role_string = getattr(settings, 'USER_ROLE_CLASS', None)
-    user_role_class = _import_class_from_string(user_role_string) or UserRole
-    role = user_role_class(user=user, name=role.name)
+    #user_role_string = getattr(settings, 'USER_ROLE_CLASS', None)
+    #user_role_class = _import_class_from_string(user_role_string) or UserRole
+    role = UserRole(user=user, name=role.name)
     role.save()
