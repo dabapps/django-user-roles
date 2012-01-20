@@ -30,6 +30,7 @@ class TestSettingsManager(object):
 
     def syncdb(self):
         loading.cache.loaded = False
+        # Use this, rather than call_command, or 'south' will screw with us.
         syncdb.Command().execute(verbosity=0)
 
     def revert(self):
