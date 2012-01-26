@@ -1,6 +1,6 @@
 from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
-import importlib
+from django.utils import importlib
 
 
 _IMPORT_FAILED = "Could not import role profile '%s'"
