@@ -43,15 +43,6 @@ class Roles(object):
                 if isinstance(item, basestring):
                     # An item like 'manager'
                     self._roles_dict[item] = None
-                elif len(item) == 2:
-                    # An item like ('manager', 'myapp.models.ManagerProfile')
-                    #           or ('manager', '')
-                    name, profile = item
-                    try:
-                        profile_class = _import_class_from_string(profile)
-                    except:
-                        raise ImproperlyConfigured(_IMPORT_FAILED, profile)
-                    self._roles_dict[name] = profile_class
                 else:
                     # Anything else
                     raise ImproperlyConfigured(_INCORRECT_ARGS)

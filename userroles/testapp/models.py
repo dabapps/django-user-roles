@@ -1,5 +1,6 @@
 from django.db import models
+from userroles.models import UserRole
 
 
-class ModeratorProfile(models.Model):
+class TestModeratorProfile(UserRole):
     stars = models.IntegerField()
