@@ -3,6 +3,9 @@ from django.core.exceptions import ImproperlyConfigured
 from django.utils import importlib
 
 
+__version__ = '0.0.1'
+
+
 _IMPORT_FAILED = "Could not import role profile '%s'"
 _INCORRECT_ARGS = "USER_ROLES should be a list of strings and/or two-tuples"
 
