@@ -9,5 +9,7 @@ def role_required(*roles):
     and django.contrib.auth.decorators.permission_required.
     """
     def check_role(user):
-        return getattr(user, 'role', None) in roles
+        if not hasattr(user, 'role'):
+	    return False
+	return getattr(user, 'role', None) in roles
     return user_passes_test(check_role)
