@@ -1,5 +1,5 @@
 from django.contrib.auth.decorators import user_passes_test
-
+from userroles.models import UserRole
 
 def role_required(*roles):
     """
@@ -9,5 +9,8 @@ def role_required(*roles):
     and django.contrib.auth.decorators.permission_required.
     """
     def check_role(user):
-        return getattr(user, 'role', None) in roles
+        try:
+            return getattr(user, 'role', None) in roles
+        except UserRole.DoesNotExist:
+            return False
     return user_passes_test(check_role)
