@@ -7,14 +7,14 @@ import os
 import sys
 
 
-name='django-user-roles'
-package='userroles'
-description='Simple role-based user permissions for Django.'
-url='http://github.com/dabapps/django-user-roles'
-author='Tom Christie'
-email='tom@tomchristie.com'
-license='BSD'
-install_requires=[]
+name = 'django-user-roles'
+package = 'userroles'
+description = 'Simple role-based user permissions for Django.'
+url = 'http://github.com/dabapps/django-user-roles'
+author = 'Tom Christie'
+email = 'tom@tomchristie.com'
+license = 'BSD'
+install_requires = []
 
 
 def get_version(package):
@@ -52,7 +52,7 @@ def get_package_data(package):
 
 if sys.argv[-1] == 'publish':
     os.system("python setup.py sdist upload")
-    args = {'version': get_version(name)}
+    args = {'version': get_version(package)}
     print "You probably want to also tag the version now:"
     print "  git tag -a %(version)s -m 'version %(version)s'" % args
     print "  git push --tags"
