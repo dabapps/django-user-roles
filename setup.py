@@ -7,13 +7,14 @@ import os
 import sys
 
 
-name = 'django-user-roles'
-package = 'userroles'
-description = 'Simple role-based user permissions for Django.'
-url = 'http://github.com/dabapps/django-user-roles'
-author = 'Tom Christie'
-license = 'BSD'
-install_requires = []
+name='django-user-roles'
+package='userroles'
+description='Simple role-based user permissions for Django.'
+url='http://github.com/dabapps/django-user-roles'
+author='Tom Christie'
+email='tom@tomchristie.com'
+license='BSD'
+install_requires=[]
 
 
 def get_version(package):
@@ -65,6 +66,7 @@ setup(
     license=license,
     description=description,
     author=author,
+    author_email=email,
     packages=get_packages(package),
     package_data=get_package_data(package),
     install_requires=install_requires
