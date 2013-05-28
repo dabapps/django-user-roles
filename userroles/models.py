@@ -50,3 +50,4 @@ def set_user_role(user, role, profile=None):
             profile.name = role.name
 
     profile.save()
+    user.role = profile
