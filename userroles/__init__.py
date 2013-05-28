@@ -3,7 +3,7 @@ from django.core.exceptions import ImproperlyConfigured
 from django.utils import importlib
 
 
-__version__ = '0.1.0'
+__version__ = '0.2.0'
 
 
 _IMPORT_FAILED = "Could not import role profile '%s'"
