@@ -40,6 +40,7 @@ class TestSettingsManager(object):
             else:
                 defaults[opt.dest] = opt.default
         defaults['verbosity'] = 0
+        defaults['interactive'] = False
         command.execute(*[], **defaults)
 
     def revert(self):

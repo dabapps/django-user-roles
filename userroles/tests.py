@@ -3,9 +3,10 @@
 
 from django.conf import settings
 from django.contrib.auth.models import User
+import django.contrib.auth
 from milkman.dairy import milkman
 from userroles.models import set_user_role, UserRole
-from userroles.testapp.models import TestModeratorProfile
+from userroles.testapp.models import TestModeratorProfile, TestUser
 from userroles.utils import SettingsTestCase
 from userroles import Roles
 
@@ -22,6 +23,13 @@ installed_apps_config.append('userroles.testapp')
 
 roles = Roles(roles_config)
 
+# Handle older versions of Django
+if hasattr(django.contrib.auth, 'get_user_model'):
+    get_user_model = django.contrib.auth.get_user_model
+else:
+    def get_user_model():
+        return User
+
 
 class TestCase(SettingsTestCase):
     def setUp(self):
@@ -29,7 +37,8 @@ class TestCase(SettingsTestCase):
         self.settings(
             INSTALLED_APPS=installed_apps_config,
             ROOT_URLCONF='userroles.testapp.urls',
-            USER_ROLES=roles_config
+            USER_ROLES=roles_config,
+            AUTH_USER_MODEL='testapp.TestUser'
         )
         self.restore_roles = UserRole._valid_roles
         UserRole._valid_roles = roles
@@ -69,7 +78,7 @@ class UserRoleTests(TestCase):
 
     def setUp(self):
         super(UserRoleTests, self).setUp()
-        self.user = milkman.deliver(User)
+        self.user = milkman.deliver(get_user_model())
         set_user_role(self.user, roles.manager)
 
     def test_role_comparison(self):
@@ -144,7 +153,7 @@ class UserRoleTests(TestCase):
 class ViewTests(TestCase):
     def setUp(self):
         super(ViewTests, self).setUp()
-        self.user = milkman.deliver(User)
+        self.user = milkman.deliver(get_user_model())
         self.user.set_password('password')
         self.user.save()
         self.client.login(username=self.user.username, password='password')

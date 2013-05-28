@@ -121,5 +121,8 @@ INSTALLED_APPS = (
     'django.contrib.sites',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'userroles.testapp',
     'userroles',
 )
+
+AUTH_USER_MODEL = 'testapp.TestUser'

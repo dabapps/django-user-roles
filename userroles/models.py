@@ -1,10 +1,16 @@
-from django.contrib.auth.models import User
+import django.contrib.auth
 from django.db import models
 from userroles import roles
+from django.conf import settings
+
+if hasattr(django.contrib.auth, 'get_user_model'):
+    user_model = settings.AUTH_USER_MODEL
+else:
+    user_model = 'auth.User'
 
 
 class UserRole(models.Model):
-    user = models.OneToOneField(User, related_name='role')
+    user = models.OneToOneField(user_model, related_name='role')
     name = models.CharField(max_length=100, choices=roles.choices)
     child = models.CharField(max_length=100, blank=True)
     _valid_roles = roles
