@@ -1,6 +1,8 @@
 Django User Roles
 =================
 
+[![build-status-image]][travis]
+
 Simple role-based user permissions for Django.
 
 django-user-roles is a simple, reusable app that allows you to create a set of user roles, which can be used to control which views each type of user has permission to view, and to customize how the site is presented to different types of user.
