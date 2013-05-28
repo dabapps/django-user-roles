@@ -5,6 +5,7 @@ from django.conf import settings
 from django.db.models import loading
 from django.test import TestCase
 from django.core.management.commands import syncdb
+from optparse import NO_DEFAULT
 
 NO_SETTING = ('!', None)
 
@@ -31,7 +32,15 @@ class TestSettingsManager(object):
     def syncdb(self):
         loading.cache.loaded = False
         # Use this, rather than call_command, or 'south' will screw with us.
-        syncdb.Command().execute(verbosity=0)
+        command = syncdb.Command()
+        defaults = {}
+        for opt in command.option_list:
+            if opt.default is NO_DEFAULT:
+                defaults[opt.dest] = None
+            else:
+                defaults[opt.dest] = opt.default
+        defaults['verbosity'] = 0
+        command.execute(*[], **defaults)
 
     def revert(self):
         for k, v in self._original_settings.iteritems():

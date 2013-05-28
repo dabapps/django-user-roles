@@ -14,4 +14,4 @@ install:
   - export PYTHONPATH=.
 
 script:
-  - python manage.py test
+  - python manage.py test userroles
