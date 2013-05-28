@@ -2,11 +2,13 @@ from django.db import models
 from userroles.models import UserRole
 import django.contrib.auth.models
 
+
 if hasattr(django.contrib.auth.models, 'AbstractBaseUser'):
     from django.contrib.auth.models import AbstractBaseUser, UserManager
 else:
     class AbstractBaseUser(object):
         pass
+
     class UserManager(object):
         pass
 

@@ -6,7 +6,7 @@ from django.contrib.auth.models import User
 import django.contrib.auth
 from milkman.dairy import milkman
 from userroles.models import set_user_role, UserRole
-from userroles.testapp.models import TestModeratorProfile, TestUser
+from userroles.testapp.models import TestModeratorProfile
 from userroles.utils import SettingsTestCase
 from userroles import Roles
 
@@ -122,7 +122,8 @@ class UserRoleTests(TestCase):
         """
         Set a role that takes a profile.
         """
-        set_user_role(self.user, roles.moderator, TestModeratorProfile(stars=5))
+        set_user_role(self.user, roles.moderator,
+                      TestModeratorProfile(stars=5))
         self.assertTrue(self.user.role.is_moderator)
         self.assertEquals(self.user.role.profile.stars, 5)
 

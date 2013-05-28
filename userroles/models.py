@@ -3,6 +3,7 @@ from django.db import models
 from userroles import roles
 from django.conf import settings
 
+
 if hasattr(django.contrib.auth, 'get_user_model'):
     user_model = settings.AUTH_USER_MODEL
 else:
@@ -31,7 +32,7 @@ class UserRole(models.Model):
                 return self == role
 
         raise AttributeError("'%s' object has no attribute '%s'" %
-                              (self.__class__.__name__, name))
+                             (self.__class__.__name__, name))
 
     def __unicode__(self):
         return self.name
