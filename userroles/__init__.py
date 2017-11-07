@@ -33,23 +33,23 @@ class Role(object):
 
 
 class Roles(object):
-    _roles_dict = None
+    _roles_mapping = None
 
     @property
-    def roles_dict(self):
+    def roles_mapping(self):
         """
-        Load list style config into dict of {role_name: role_class}
+        Load list style config into list of of (role_name, role_class) tuples
         """
-        if self._roles_dict is None:
-            self._roles_dict = {}
+        if self._roles_mapping is None:
+            self._roles_mapping = []
             for item in self._config:
                 if isinstance(item, basestring):
                     # An item like 'manager'
-                    self._roles_dict[item] = None
+                    self._roles_mapping.append((item, None))
                 else:
                     # Anything else
                     raise ImproperlyConfigured(_INCORRECT_ARGS)
-        return self._roles_dict
+        return self._roles_mapping
 
     @property
     def choices(self):
@@ -57,7 +57,7 @@ class Roles(object):
         Return a list of two-tuples of role names, suitable for use as the
         'choices' argument to a model field.
         """
-        return [(role, role) for role in self.roles_dict.keys()]
+        return [(role, role) for role in self.roles_mapping]
 
     def __init__(self, config=None):
         """
@@ -72,9 +72,9 @@ class Roles(object):
         Handle custom properties for returning Role objects.
         For example: `roles.moderator`
         """
-        if name in self.roles_dict.keys():
-            return Role(name=name)
-        else:
-            raise AttributeError("No such role exists '%s'" % name)
+        for role_name, _ in self.roles_mapping:
+            if role_name == name:
+                return Role(name=name)
+        raise AttributeError("No such role exists '%s'" % name)
 
 roles = Roles()
