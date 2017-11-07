@@ -57,7 +57,7 @@ class Roles(object):
         Return a list of two-tuples of role names, suitable for use as the
         'choices' argument to a model field.
         """
-        return [(role, role) for role in self.roles_mapping]
+        return [(name, name) for name, value in self.roles_mapping]
 
     def __init__(self, config=None):
         """
