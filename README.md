@@ -9,6 +9,10 @@ django-user-roles is a simple, reusable app that allows you to create a set of u
 User roles can also be associated with differing profile classes, allowing you to store different types of user information for different user types.
 -->
 
+DEPRECATED
+--------
+**PLEASE NOTE**: *This repository is no longer actively maintained or regularly used by DabApps and therefore should be considered deprecated. Please find alternative packages for your needs or feel free to create and maintain your own fork.*
+
 Settings
 --------
 
